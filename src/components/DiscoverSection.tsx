@@ -70,13 +70,13 @@ export default function DiscoverSection() {
   };
 
   return (
-    <section id="discover" className="scroll-mt-16 py-16 sm:py-24 bg-[#12100E] text-ivory relative overflow-hidden">
+    <section id="discover" className="scroll-mt-16 py-12 sm:py-20 bg-[#12100E] text-ivory relative overflow-hidden">
       {/* Heritage subtle background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brass/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[450px] bg-brass/5 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="w-full max-w-[1680px] mx-auto px-2 sm:px-4 lg:px-6 relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
           <div className="inline-flex items-center space-x-2 text-brass text-xs font-semibold tracking-[0.25em] uppercase mb-3">
             <span className="w-8 h-[1px] bg-brass" />
             <span>Discover · Profil Hotel</span>
@@ -92,8 +92,8 @@ export default function DiscoverSection() {
           </p>
         </div>
 
-        {/* Video Player Frame with Heritage Accents (GIF-style Loop with Audio Controls) */}
-        <div className="relative max-w-5xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden bg-[#181412] border border-[#3A3026] shadow-2xl group">
+        {/* Video Player Frame with Heritage Accents (Full Width Cinematic GIF-style Loop) */}
+        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#181412] border border-[#3A3026] shadow-2xl group">
           {/* Decorative Corner Ornaments */}
           <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-brass/50 rounded-tl z-20 pointer-events-none" />
           <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-brass/50 rounded-tr z-20 pointer-events-none" />
@@ -103,7 +103,7 @@ export default function DiscoverSection() {
           {/* Video Container - Click to Play/Pause */}
           <div
             onClick={togglePlay}
-            className="relative aspect-video w-full bg-[#0D0B0A] overflow-hidden cursor-pointer select-none"
+            className="relative aspect-video max-h-[820px] w-full bg-[#0D0B0A] overflow-hidden cursor-pointer select-none"
           >
             <video
               ref={videoRef}
@@ -212,15 +212,6 @@ export default function DiscoverSection() {
                 style={{ width: `${progress}%` }}
               />
             </div>
-          </div>
-
-          {/* Video Footer Caption */}
-          <div className="p-4 sm:p-5 bg-[#171311] border-t border-[#2E251E] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-warmGray">
-            <div className="flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-brass" />
-              <span className="font-medium text-ivory">Grand Hotel De Djokja · Video Cuplikan Acara & Suasana</span>
-            </div>
-            <span className="text-warmGray/70">Otomatis berputar (GIF reel) · Sentuh tombol suara untuk mendengar audio</span>
           </div>
         </div>
       </div>
