@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Hero from '../components/Hero';
 import UpcomingEventsGrid from '../components/UpcomingEventsGrid';
+import DiscoverSection from '../components/DiscoverSection';
 import VenuesSection from '../components/VenuesSection';
 import { getPublicEvents, getUpcomingHeroEvents, getVenues } from '../lib/events';
 
@@ -25,6 +26,9 @@ export default async function HomePage() {
 
         {/* Upcoming Events Grid (Photo 2 reference layout) */}
         <UpcomingEventsGrid events={allPublicEvents} />
+
+        {/* Discover / Video Profil Section */}
+        <DiscoverSection />
 
         {/* Ruang Acara (Venues) */}
         <VenuesSection venues={venues} />

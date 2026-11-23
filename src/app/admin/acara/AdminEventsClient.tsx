@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AdminSidebar from '@/components/admin/AdminSidebar';
 import {
   Plus,
   Search,
@@ -172,37 +173,13 @@ export default function AdminEventsClient({
   };
 
   return (
-    <>
-      {/* Admin Navbar */}
-      <header className="border-b border-brass/25 bg-ink-panel/90 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
-          <div className="flex items-center space-x-3">
-            <span className="font-serif text-2xl font-bold text-ivory">
-              Grand Hotel De Djokja
-            </span>
-            <span className="px-2.5 py-0.5 rounded-full bg-brass/20 text-brass text-xs font-semibold uppercase tracking-wider border border-brass/30">
-              Admin
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <span className="text-xs text-warmGray hidden sm:inline">
-              {adminName}
-            </span>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="inline-flex items-center text-xs font-semibold px-3.5 py-2 rounded-xl bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 text-warmGray border border-white/10 transition-all min-h-[40px]"
-            >
-              <LogOut className="w-3.5 h-3.5 mr-1.5" />
-              <span>Keluar</span>
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#100D0B] text-ivory flex">
+      {/* Interactive Sidebar */}
+      <AdminSidebar adminName={adminName} />
 
       {/* Main Admin Area */}
-      <main className="flex-1 max-w-[1320px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <div className="flex-1 lg:pl-[260px] flex flex-col min-w-0">
+        <main className="p-4 sm:p-6 lg:p-10 max-w-[1440px] w-full mx-auto space-y-8">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-brass/20 gap-4">
           <div>
@@ -630,7 +607,8 @@ export default function AdminEventsClient({
             </div>
           </div>
         )}
-      </main>
-    </>
+        </main>
+      </div>
+    </div>
   );
 }

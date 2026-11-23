@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import EventImage from '@/components/EventImage';
+import AdminSidebar from '@/components/admin/AdminSidebar';
 import { useRouter } from 'next/navigation';
 import {
   Upload,
@@ -212,9 +213,20 @@ export default function EventForm({ initialEvent, venues, isNew = false }: Event
         event_id: initialEvent?.id || '',
         name: '',
         bio: '',
+        portrait_url: null,
         sort_order: performers.length + 1,
       },
     ]);
+  };
+
+  const handlePerformerPhotoUpload = async (index: number, file: File) => {
+    try {
+      setGeneralError('');
+      const url = await uploadFile(file);
+      updatePerformer(index, 'portrait_url', url);
+    } catch (err: any) {
+      setGeneralError(err.message || 'Gagal mengunggah foto pengisi acara.');
+    }
   };
 
   const updatePerformer = (index: number, field: keyof Performer, value: any) => {
@@ -280,13 +292,11 @@ export default function EventForm({ initialEvent, venues, isNew = false }: Event
 
       setSuccessMessage(data.message || 'Perubahan berhasil disimpan.');
 
-      if (isNew) {
-        setTimeout(() => {
-          router.push(`/admin/acara/${data.eventId}`);
-        }, 1200);
-      } else if (data.event) {
-        setVersion(data.event.version);
-      }
+      // Langsung kembali ke dashboard setelah simpan
+      setTimeout(() => {
+        router.push('/admin/acara');
+        router.refresh();
+      }, 500);
     } catch (err: any) {
       setGeneralError(err.message || 'Terjadi kesalahan sistem.');
     } finally {
@@ -350,7 +360,13 @@ export default function EventForm({ initialEvent, venues, isNew = false }: Event
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div className="min-h-screen bg-[#100D0B] text-ivory flex">
+      {/* Interactive Sidebar */}
+      <AdminSidebar />
+
+      {/* Main Content Area */}
+      <div className="flex-1 lg:pl-[260px] flex flex-col min-w-0">
+        <div className="max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
       {/* Top Navigation Bar */}
       <div className="flex items-center justify-between pb-6 mb-8 border-b border-brass/20">
         <Link
@@ -945,9 +961,55 @@ export default function EventForm({ initialEvent, venues, isNew = false }: Event
               {performers.map((p, pIdx) => (
                 <div
                   key={p.id || pIdx}
-                  className="p-4 rounded-xl bg-ink/70 border border-white/10 flex flex-col sm:flex-row items-start gap-4"
+                  className="p-4 rounded-xl bg-ink/70 border border-white/10 flex flex-col md:flex-row items-start gap-4"
                 >
-                  <div className="w-full sm:flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Performer Photo Thumbnail & Upload */}
+                  <div className="flex flex-col items-center gap-1.5 self-center md:self-start flex-shrink-0">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-ink-panel border-2 border-brass/30 flex items-center justify-center group">
+                      {p.portrait_url ? (
+                        <>
+                          <Image
+                            src={p.portrait_url}
+                            alt={p.name || 'Foto pengisi'}
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => updatePerformer(pIdx, 'portrait_url', null)}
+                            className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-rose-400"
+                            title="Hapus foto"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <ImageIcon className="w-6 h-6 text-warmGray/40" />
+                      )}
+                    </div>
+
+                    <label
+                      htmlFor={`performer-photo-${pIdx}`}
+                      className="cursor-pointer text-[10px] text-brass hover:text-brass-light font-medium inline-flex items-center space-x-1 py-0.5"
+                    >
+                      <Upload className="w-3 h-3" />
+                      <span>{p.portrait_url ? 'Ganti' : 'Unggah Foto'}</span>
+                    </label>
+                    <input
+                      id={`performer-photo-${pIdx}`}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          await handlePerformerPhotoUpload(pIdx, file);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div className="w-full flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[11px] text-warmGray mb-1">
                         Nama Pengisi / Komunitas <span className="text-rose-400">*</span>
@@ -972,12 +1034,24 @@ export default function EventForm({ initialEvent, venues, isNew = false }: Event
                         className="w-full bg-ink-panel border border-white/10 rounded-lg px-3 py-2 text-xs text-ivory"
                       />
                     </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-[10px] text-warmGray/60 mb-1">
+                        URL Foto Pengisi (Otomatis terisi saat unggah, atau masukkan tautan gambar)
+                      </label>
+                      <input
+                        type="text"
+                        value={p.portrait_url || ''}
+                        onChange={(e) => updatePerformer(pIdx, 'portrait_url', e.target.value || null)}
+                        placeholder="/images/performers/raras.svg atau https://..."
+                        className="w-full bg-ink-panel/50 border border-white/5 rounded-lg px-2.5 py-1 text-[11px] text-warmGray focus:text-ivory"
+                      />
+                    </div>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => removePerformer(pIdx)}
-                    className="p-2 rounded-lg bg-ink-panel hover:bg-rose-500/20 text-warmGray hover:text-rose-400 self-end sm:self-center"
+                    className="p-2 rounded-lg bg-ink-panel hover:bg-rose-500/20 text-warmGray hover:text-rose-400 self-end md:self-center"
                     aria-label="Hapus pengisi acara"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -1190,6 +1264,8 @@ export default function EventForm({ initialEvent, venues, isNew = false }: Event
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }
