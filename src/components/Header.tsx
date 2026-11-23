@@ -8,7 +8,7 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 15);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
@@ -19,40 +19,19 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-colors duration-300 ${
         scrolled
-          ? 'bg-ink/95 backdrop-blur-md border-b border-brass/20 shadow-dark'
-          : 'bg-gradient-to-b from-ink/90 via-ink/40 to-transparent'
+          ? 'bg-[#12100E]/95 backdrop-blur-md border-b border-[#E1B878]/20 shadow-lg'
+          : 'bg-gradient-to-b from-[#12100E]/90 via-[#12100E]/40 to-transparent'
       }`}
     >
-      <div className="max-w-[1320px] mx-auto px-5 sm:px-8 lg:px-12 h-20 flex items-center justify-between">
-        {/* Wordmark */}
+      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 h-[52px] sm:h-[56px] md:h-16 flex items-center justify-start">
+        {/* Minimalist Heritage Wordmark */}
         <Link
           href="/"
-          className="group flex flex-col focus:outline-none"
+          className="font-serif text-[19px] sm:text-[20px] md:text-2xl font-semibold text-ivory hover:text-brass transition-colors leading-[1.15] tracking-normal whitespace-nowrap focus:outline-none focus-visible:ring-1 focus-visible:ring-brass rounded"
           aria-label="Grand Hotel De Djokja Beranda"
         >
-          <span className="font-serif text-2xl sm:text-3xl font-semibold tracking-wider text-ivory group-hover:text-brass transition-colors">
-            Grand Hotel De Djokja
-          </span>
-          <span className="text-[10px] uppercase tracking-[0.25em] text-warmGray font-medium">
-            Yogyakarta · Est. 2027
-          </span>
+          Grand Hotel De Djokja
         </Link>
-
-        {/* Public Navigation */}
-        <nav className="flex items-center space-x-6 sm:space-x-8 text-sm font-medium tracking-wide">
-          <Link
-            href="/#events"
-            className="text-ivory/90 hover:text-brass transition-colors py-2 px-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brass hover:after:w-full after:transition-all"
-          >
-            Agenda
-          </Link>
-          <Link
-            href="/#ruang"
-            className="text-ivory/90 hover:text-brass transition-colors py-2 px-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brass hover:after:w-full after:transition-all"
-          >
-            Ruang Acara
-          </Link>
-        </nav>
       </div>
     </header>
   );

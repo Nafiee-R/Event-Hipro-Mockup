@@ -3,6 +3,11 @@ export const MONTH_NAMES_ID = [
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
+export const MONTH_SHORT_ID = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+];
+
 /**
  * Returns current simulated time or real time.
  * Default simulated time is 2027-01-05T12:00:00+07:00 as requested by PRD:
@@ -57,6 +62,19 @@ export function formatDateID(dateStr: string, includeYear = true): string {
   const wibDate = new Date(utc + (3600000 * 7));
   const day = wibDate.getDate();
   const month = MONTH_NAMES_ID[wibDate.getMonth()];
+  const year = wibDate.getFullYear();
+  return includeYear ? `${day} ${month} ${year}` : `${day} ${month}`;
+}
+
+/**
+ * Formats date for compact display: "16 Jan" or "16 Jan 2027"
+ */
+export function formatDateShortID(dateStr: string, includeYear = false): string {
+  const d = parseDateWIB(dateStr);
+  const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+  const wibDate = new Date(utc + (3600000 * 7));
+  const day = wibDate.getDate();
+  const month = MONTH_SHORT_ID[wibDate.getMonth()];
   const year = wibDate.getFullYear();
   return includeYear ? `${day} ${month} ${year}` : `${day} ${month}`;
 }

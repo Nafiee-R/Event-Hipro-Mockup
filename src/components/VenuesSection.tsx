@@ -36,8 +36,8 @@ export default function VenuesSection({ venues }: VenuesSectionProps) {
   };
 
   return (
-    <section id="ruang" className="py-20 bg-[#151210] border-t border-[#2E2620]">
-      <div className="max-w-[1320px] mx-auto px-5 sm:px-8 lg:px-12">
+    <section id="ruang" className="scroll-mt-16 py-16 sm:py-20 bg-[#151210] border-t border-[#2E2620]">
+      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center sm:text-left">
           <div className="inline-flex items-center space-x-2 text-brass text-xs font-semibold tracking-[0.2em] uppercase mb-2">
             <span className="w-6 h-[1px] bg-brass" />

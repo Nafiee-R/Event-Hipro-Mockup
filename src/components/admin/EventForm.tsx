@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import EventImage from '@/components/EventImage';
 import { useRouter } from 'next/navigation';
 import {
   Upload,
@@ -488,7 +489,7 @@ export default function EventForm({ initialEvent, venues, isNew = false }: Event
                       Pratinjau Panorama Desktop (~3:1)
                     </span>
                     <div className="relative aspect-[3/1] bg-ink rounded-xl overflow-hidden border border-brass/30">
-                      <Image
+                      <EventImage
                         src={coverUrl}
                         alt={coverAlt || 'Pratinjau Desktop'}
                         fill
@@ -503,7 +504,7 @@ export default function EventForm({ initialEvent, venues, isNew = false }: Event
                       Pratinjau Ponsel (16:10)
                     </span>
                     <div className="relative aspect-[16/10] max-w-[280px] bg-ink rounded-xl overflow-hidden border border-brass/30">
-                      <Image
+                      <EventImage
                         src={coverUrl}
                         alt={coverAlt || 'Pratinjau Ponsel'}
                         fill

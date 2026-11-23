@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, MapPin, ExternalLink, AlertTriangle, CheckCircle2, Ticket } from 'lucide-react';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
+import EventImage from '../../../components/EventImage';
 import { getEventBySlug } from '../../../lib/events';
 import { formatDateID, formatTimeRangeWIB, formatPriceIDR, isEventEnded } from '../../../lib/date';
 
@@ -58,22 +59,18 @@ export default async function EventDetailPage({ params }: PageProps) {
       <main className="flex-1 pb-24">
         {/* Panoramic Hero Banner */}
         <div className="relative w-full aspect-[16/10] sm:aspect-[21/9] lg:aspect-[3/1] max-h-[540px] bg-ink-panel overflow-hidden">
-          {event.cover_url ? (
-            <Image
-              src={event.cover_url}
-              alt={event.cover_alt || event.title}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-center"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-r from-[#3B2217] via-[#1D232A] to-[#121820]" />
-          )}
+          <EventImage
+            src={event.cover_url}
+            alt={event.cover_alt || event.title}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
 
           {/* Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-transparent to-ink/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-transparent to-ink/60 pointer-events-none" />
 
           {/* Back Button Floating on Banner */}
           <div className="absolute top-24 left-5 sm:left-8 lg:left-12 z-20">
