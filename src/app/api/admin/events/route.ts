@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionAdmin } from '@/lib/auth';
-import { getDb } from '@/lib/db';
+import { getDb, ensureDbReady } from '@/lib/db';
 import {
   getAdminEvents,
   generateUniqueSlug,
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const db = getDb();
+    const db = await ensureDbReady();
     const eventId = 'ev_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
     const slug = await generateUniqueSlug(eventData.title);
     const now = new Date().toISOString();

@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { cookies } from 'next/headers';
-import { getDb } from './db';
+import { getDb, ensureDbReady } from './db';
 import { Admin } from './types';
 
 const SESSION_COOKIE_NAME = 'djokja_admin_session';
@@ -26,7 +26,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export async function authenticateAdmin(email: string, password: string): Promise<Admin | null> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const result = await db.execute({
     sql: 'SELECT * FROM admins WHERE email = ? LIMIT 1',
     args: [email.toLowerCase().trim()],

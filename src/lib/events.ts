@@ -1,4 +1,4 @@
-import { getDb } from './db';
+import { getDb, ensureDbReady } from './db';
 import { Event, Venue, Performer, EventGallery, ScheduleChange, EventFilter } from './types';
 import { getMonthWIB, getYearWIB, getCurrentTimeWIB } from './date';
 
@@ -12,7 +12,7 @@ function slugify(text: string): string {
 }
 
 export async function getVenues(): Promise<Venue[]> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const result = await db.execute('SELECT * FROM venues ORDER BY name ASC');
   return result.rows.map((row: any) => ({
     id: row.id,
@@ -23,7 +23,7 @@ export async function getVenues(): Promise<Venue[]> {
 }
 
 export async function getVenueById(id: string): Promise<Venue | null> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const result = await db.execute({
     sql: 'SELECT * FROM venues WHERE id = ?',
     args: [id],
@@ -45,7 +45,7 @@ export async function getVenueById(id: string): Promise<Venue | null> {
  * Chronologically ordered by starts_at ASC.
  */
 export async function getPublicEvents(filter?: EventFilter): Promise<Event[]> {
-  const db = getDb();
+  const db = await ensureDbReady();
   let query = `
     SELECT e.*, v.name as venue_name
     FROM events e
@@ -94,7 +94,7 @@ export async function getPublicEvents(filter?: EventFilter): Promise<Event[]> {
  * If all ended, returns empty list so UI displays "Lihat arsip 2027".
  */
 export async function getUpcomingHeroEvents(simulatedTimeIso?: string): Promise<Event[]> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const currentTime = getCurrentTimeWIB(simulatedTimeIso);
 
   const query = `
@@ -120,7 +120,7 @@ export async function getUpcomingHeroEvents(simulatedTimeIso?: string): Promise<
  * Returns featured events for the editorial highlight cards (slots 1 and 2).
  */
 export async function getFeaturedEvents(): Promise<Event[]> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const query = `
     SELECT e.*, v.name as venue_name
     FROM events e
@@ -137,7 +137,7 @@ export async function getFeaturedEvents(): Promise<Event[]> {
  * Excludes deleted or draft events for public view.
  */
 export async function getEventBySlug(slug: string): Promise<Event | null> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const query = `
     SELECT e.*, v.name as venue_name
     FROM events e
@@ -161,7 +161,7 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
  * Admin: Get all events including drafts (excludes soft-deleted).
  */
 export async function getAdminEvents(month?: string, status?: string, q?: string): Promise<Event[]> {
-  const db = getDb();
+  const db = await ensureDbReady();
   let query = `
     SELECT e.*, v.name as venue_name
     FROM events e
@@ -197,7 +197,7 @@ export async function getAdminEvents(month?: string, status?: string, q?: string
  * Admin: Get event by ID (including draft).
  */
 export async function getAdminEventById(id: string): Promise<Event | null> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const query = `
     SELECT e.*, v.name as venue_name
     FROM events e
@@ -216,7 +216,7 @@ export async function getAdminEventById(id: string): Promise<Event | null> {
 }
 
 export async function getPerformersByEventId(eventId: string): Promise<Performer[]> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const result = await db.execute({
     sql: 'SELECT * FROM performers WHERE event_id = ? ORDER BY sort_order ASC',
     args: [eventId],
@@ -232,7 +232,7 @@ export async function getPerformersByEventId(eventId: string): Promise<Performer
 }
 
 export async function getGalleryByEventId(eventId: string): Promise<EventGallery[]> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const result = await db.execute({
     sql: 'SELECT * FROM event_galleries WHERE event_id = ? ORDER BY sort_order ASC',
     args: [eventId],
@@ -248,7 +248,7 @@ export async function getGalleryByEventId(eventId: string): Promise<EventGallery
 }
 
 export async function getLatestScheduleChange(eventId: string): Promise<ScheduleChange | null> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const result = await db.execute({
     sql: 'SELECT * FROM schedule_changes WHERE event_id = ? ORDER BY datetime(created_at) DESC LIMIT 1',
     args: [eventId],
@@ -272,7 +272,7 @@ export async function getLatestScheduleChange(eventId: string): Promise<Schedule
  * Creates unique slug for a given title
  */
 export async function generateUniqueSlug(title: string, excludeEventId?: string): Promise<string> {
-  const db = getDb();
+  const db = await ensureDbReady();
   let baseSlug = slugify(title) || 'acara';
   let slug = baseSlug;
   let counter = 1;
@@ -357,7 +357,7 @@ export async function rescheduleEvent(params: {
   adminId: string;
   version: number;
 }): Promise<{ success: boolean; error?: string }> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const event = await getAdminEventById(params.eventId);
   if (!event) return { success: false, error: 'Acara tidak ditemukan.' };
 
@@ -430,7 +430,7 @@ export async function rescheduleEvent(params: {
  * Soft delete an event
  */
 export async function softDeleteEvent(eventId: string, version: number): Promise<{ success: boolean; error?: string }> {
-  const db = getDb();
+  const db = await ensureDbReady();
   const event = await getAdminEventById(eventId);
   if (!event) return { success: false, error: 'Acara tidak ditemukan.' };
 

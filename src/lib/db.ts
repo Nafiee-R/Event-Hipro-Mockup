@@ -1,23 +1,82 @@
 import { createClient, Client } from '@libsql/client';
 import path from 'path';
 import fs from 'fs';
+import { seedInitialData } from './seedData';
 
 let client: Client | null = null;
+let isInitialized = false;
+let initPromise: Promise<Client> | null = null;
 
+/**
+ * Returns configuration details for the database connection.
+ */
+export function getDbConfig() {
+  const rawUrl =
+    process.env.TURSO_DATABASE_URL ||
+    process.env.DATABASE_URL ||
+    process.env.TURSO_DB_URL ||
+    process.env.LIBSQL_URL ||
+    '';
+
+  const rawToken =
+    process.env.TURSO_AUTH_TOKEN ||
+    process.env.DATABASE_AUTH_TOKEN ||
+    process.env.TURSO_DB_AUTH_TOKEN ||
+    process.env.LIBSQL_AUTH_TOKEN ||
+    process.env.TURSO_TOKEN ||
+    '';
+
+  const url = rawUrl.trim().replace(/^['"]|['"]$/g, '');
+  const authToken = rawToken.trim().replace(/^['"]|['"]$/g, '');
+
+  const isTurso =
+    url.startsWith('libsql:') ||
+    url.startsWith('https:') ||
+    url.startsWith('http:') ||
+    url.includes('.turso.io');
+
+  return { url, authToken, isTurso };
+}
+
+/**
+ * Instantiates or returns the singleton libSQL Client.
+ * Automatically connects to Turso when TURSO_DATABASE_URL is provided,
+ * otherwise falls back to the local SQLite database file in data/events.db.
+ */
 export function getDb(): Client {
   if (!client) {
-    const dataDir = path.join(process.cwd(), 'data');
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
+    const { url, authToken, isTurso } = getDbConfig();
+
+    if (isTurso) {
+      // Connect to remote Turso instance
+      client = createClient({
+        url,
+        authToken: authToken || undefined,
+      });
+    } else if (url && url.startsWith('file:')) {
+      client = createClient({ url });
+    } else {
+      // Fallback: local SQLite database in data/events.db
+      const dataDir = path.join(process.cwd(), 'data');
+      if (!fs.existsSync(dataDir)) {
+        try {
+          fs.mkdirSync(dataDir, { recursive: true });
+        } catch {
+          // In read-only serverless environments, ignore if already exists or fails
+        }
+      }
+      const dbPath = path.join(dataDir, 'events.db');
+      client = createClient({
+        url: `file:${dbPath.replace(/\\/g, '/')}`,
+      });
     }
-    const dbPath = path.join(dataDir, 'events.db');
-    client = createClient({
-      url: `file:${dbPath.replace(/\\/g, '/')}`,
-    });
   }
   return client;
 }
 
+/**
+ * Executes DDL schema statements to create all required tables if they don't exist.
+ */
 export async function initDb(): Promise<void> {
   const db = getDb();
 
@@ -105,4 +164,44 @@ export async function initDb(): Promise<void> {
       created_at TEXT NOT NULL
     );
   `);
+}
+
+/**
+ * Ensures tables exist and initial prototype data is seeded if empty.
+ * Caches the initialization promise per process execution.
+ */
+export async function ensureDbReady(): Promise<Client> {
+  const db = getDb();
+
+  if (isInitialized) {
+    return db;
+  }
+
+  if (!initPromise) {
+    initPromise = (async () => {
+      try {
+        await initDb();
+
+        // Check if database needs initial seeding (e.g. freshly created Turso database)
+        const venueCheck = await db.execute('SELECT COUNT(*) as count FROM venues');
+        const count = Number(venueCheck.rows[0]?.count ?? 0);
+
+        if (count === 0) {
+          console.log('[DB] Database is empty, seeding initial venues, admin and prototype events...');
+          await seedInitialData(db);
+          console.log('[DB] Database initial seed completed successfully.');
+        }
+
+        isInitialized = true;
+      } catch (err) {
+        console.error('[DB] Error during ensureDbReady:', err);
+        // Do not lock failure state permanently in case of transient network errors
+        initPromise = null;
+        throw err;
+      }
+      return db;
+    })();
+  }
+
+  return initPromise;
 }

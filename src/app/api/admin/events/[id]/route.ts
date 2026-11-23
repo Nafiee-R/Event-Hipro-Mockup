@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionAdmin } from '@/lib/auth';
-import { getDb } from '@/lib/db';
+import { getDb, ensureDbReady } from '@/lib/db';
 import {
   getAdminEventById,
   validateEventForPublication,
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
       }
     }
 
-    const db = getDb();
+    const db = await ensureDbReady();
     const now = new Date().toISOString();
 
     // Check slot collision if setting featured slot
