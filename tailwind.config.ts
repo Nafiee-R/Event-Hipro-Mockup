@@ -11,10 +11,10 @@ const config: Config = {
       colors: {
         ink: {
           DEFAULT: "#11151C",
-          page: "#11151C",
-          panel: "#1D232A",
-          dark: "#0B0E13",
-          light: "#262E37",
+          page: "#12100E",
+          panel: "#1C1815",
+          dark: "#0E0C0A",
+          light: "#26201B",
         },
         ivory: {
           DEFAULT: "#F6EFE3",
@@ -34,8 +34,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ["var(--font-cormorant)", "Cormorant Garamond", "Georgia", "serif"],
-        sans: ["var(--font-source-sans)", "Source Sans 3", "system-ui", "-apple-system", "sans-serif"],
+        serif: ["'Cormorant Garamond'", "Georgia", "serif"],
+        sans: ["'Source Sans 3'", "system-ui", "-apple-system", "sans-serif"],
       },
       boxShadow: {
         brass: "0 4px 20px -2px rgba(225, 184, 120, 0.25)",
